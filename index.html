@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Face</title>
+    <style>
+        /* 容器样式，设置大小、圆角、阴影等 */
+        .slider-face-container {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100em;
+            max-width: 100%;
+            min-width: 34em;
+            height: 52em;
+            max-height: 100%;
+            min-height: 46em;
+            border-radius: 1em;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            font-size: 15px;
+            margin: 100px auto;
+        }
+        /* 移动端字体缩小 */
+        @media screen and (max-width: 480px) {
+            .slider-face-container {
+                font-size: 5px;
+            }
+        }
+        /* 统一盒模型 */
+        .slider-face-container,
+        .slider-face-container * {
+            box-sizing: border-box;
+        }
+        /* 内容区布局，底部对齐，左右分布 */
+        .slider-face-content {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            position: relative;
+            margin: 2em 4em;
+            font-size: 100%;
+        }
+        /* 标题样式，绝对定位居中 */
+        .slider-face-title {
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 5%;
+            text-align: center;
+            width: 100%;
+            font-size: 2em;
+        }
+        /* 副标题样式 */
+        .slider-face-subtitle {
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 15%;
+            text-align: center;
+            width: 100%;
+            font-size: 1.5em;
+        }
+        /* 按钮区，底部绝对定位，左右分布 */
+        .slider-face-buttons {
+            position: absolute;
+            bottom: 2em;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2em;
+            gap: 0;
+        }
+        /* 按钮基础样式 */
+        .slider-face-button {
+            color: #fff;
+            border-radius: 2em;
+            text-decoration: none;
+            padding: 1.2em 3em;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(0);
+        }
+        /* 按钮悬停和按下效果 */
+        .slider-face-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        .slider-face-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        /* 开心按钮渐变色 */
+        .slider-face-button-happy {
+            background: linear-gradient(135deg, #6a4 0%, #81c061 100%);
+        }
+        .slider-face-button-happy:hover {
+            background: linear-gradient(135deg, #81c061 0%, #6a4 100%);
+        }
+        /* 不开心按钮渐变色 */
+        .slider-face-button-unhappy {
+            background: linear-gradient(135deg, #a43 0%, #c85a48 100%);
+        }
+        .slider-face-button-unhappy:hover {
+            background: linear-gradient(135deg, #c85a48 0%, #a43 100%);
+        }
+        /* 脸部主区域，使用 CSS 变量控制表情 */
+        .slider-face {
+            --happiness: 0.9;
+            --derp: 1;
+            --px: 0.5;
+            --py: 0.5;
+            width: 22em;
+            max-width: 100%;
+            height: 22em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-image: radial-gradient(#f7e0b2, #eb5);
+            border-radius: 100%;
+            overflow: hidden;
+            margin: 0;
+            align-self: center;
+            flex: 0 0 auto;
+            border: solid 2px #ecb23e;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+        .slider-face,
+        .slider-face * {
+            position: absolute;
+        }
+        /* 脸部高光，随表情变化透明度 */
+        .slider-face::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: linear-gradient(to bottom, #5a8, rgba(85, 170, 136, 0));
+            opacity: calc(1 - var(--happiness));
+        }
+        /* 腮红样式，随表情变化透明度和位置 */
+        .slider-face-blush {
+            width: 20%;
+            height: 10%;
+            background-color: rgba(255, 100, 100, 0.3);
+            border: 3px solid rgba(255, 100, 100, 0.3);
+            top: calc(45% + var(--py) * 10%);
+            border-radius: 100%;
+            opacity: calc(var(--happiness) * var(--happiness) * 0.9 + 0.1);
+        }
+        .slider-face-blush-left {
+            left: calc(7% + var(--px) * 2%);
+        }
+        .slider-face-blush-right {
+            right: calc(9% - var(--px) * 2%);
+        }
+        /* 眼睛样式，随表情变化大小和位置 */
+        .slider-face-eye {
+            width: calc(26% - var(--happiness) * 2%);
+            height: calc(26% - var(--happiness) * 2%);
+            background-color: #f6f6f6;
+            border-radius: 100%;
+            top: calc(25% + var(--py) * 10%);
+            overflow: hidden;
+        }
+        .slider-face-eye-left {
+            left: calc(18% + var(--px) * 4%);
+        }
+        .slider-face-eye-left::after {
+            transform: translate(calc((var(--px) + var(--derp) * 0.5) * 100%), calc((var(--py) + var(--derp) * 0.5) * 100%));
+        }
+        .slider-face-eye-right {
+            right: calc(22% - var(--px) * 4%);
+        }
+        .slider-face-eye-right::after {
+            transform: translate(calc((var(--px) + var(--derp) * -0.3) * 100%), calc((var(--py) + var(--derp) * -0.3) * 100%));
+        }
+        .slider-face-eye::after {
+            content: '';
+            display: block;
+            background-color: #421;
+            width: calc(55% - var(--happiness) * 10%);
+            height: calc(55% - var(--happiness) * 10%);
+            border-radius: 100%;
+        }
+        /* 嘴巴样式，随表情变化弧度和位置 */
+        .slider-face-mouth {
+            width: calc(51% - var(--happiness) * 2%);
+            height: calc(26% - var(--happiness) * 2%);
+            background-color: #a33;
+            border-radius: calc((1 - var(--happiness)) * 10em) calc((1 - var(--happiness)) * 10em) calc(var(--happiness) * 16em) calc(var(--happiness) * 16em);
+            top: calc(57.5% + var(--py) * 5%);
+            left: calc(47.5% + var(--px) * 5%);
+            transform: translateX(-50%);
+            overflow: hidden;
+            border: 3px solid #962d2d;
+        }
+        .slider-face-mouth::before {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 20%;
+            height: 20%;
+            top: 0;
+            left: 50%;
+            background-color: white;
+            border-radius: 0 0 0.5em 0.5em;
+        }
+        .slider-face-mouth::after {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 60%;
+            height: 50%;
+            left: 10%;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 20em 20em 0 0;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- 引入 React、ReactDOM、Babel 和 Ant Design -->
+<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/antd@4.24.13/dist/antd.min.js"></script>
+
+<script type="text/babel">
+    // 从 Ant Design 获取 Button 组件
+    const { Button } = antd;
+
+    // 配置对象，定义不同状态下的表情参数和 UI 文案
+    const config = {
+        maxUnhappyCount: 2,
+        animationSpeed: 0.1, // 动画速度
+        states: {
+            normal: {
+                face: { happiness: 0.9, derp: 1, px: 0.5, py: 0.5 },
+                ui: {
+                    btnHappyText: '开心',
+                    btnUnhappyText: '难过',
+                    titleText: '朋友，你要选择什么功能？',
+                    subtitleText: '.........',
+                },
+            },
+            happy: {
+                face: { happiness: 1, derp: 0, px: 0.5, py: 0.5 },
+                ui: {
+                    btnHappyText: '返回',
+                    btnUnhappyText: '返回',
+                    titleText: '已取消',
+                    subtitleText: '谢谢！',
+                },
+            },
+            unhappy: {
+                face: { happiness: 0.2, derp: 0, px: 0.5, py: 0.5 },
+                ui: {
+                    btnHappyText: '返回',
+                    btnUnhappyText: '返回',
+                    titleText: '已取消',
+                    subtitleText: '谢谢！',
+                },
+            },
+        },
+    };
+
+    // 主组件
+    function SliderFace() {
+        // 当前表情状态
+        const [currentFace, setCurrentFace] = React.useState(config.states.normal.face);
+        // 目标表情状态（用于动画过渡）
+        const targetFace = React.useRef(config.states.normal.face);
+        // UI 状态（按钮和标题文案）
+        const [uiState] = React.useState(config.states.normal.ui);
+        // 动画帧 id
+        const animationId = React.useRef(null);
+        // 容器和按钮的 ref
+        const containerRef = React.useRef(null);
+        const btnHappyRef = React.useRef(null);
+        const btnUnhappyRef = React.useRef(null);
+
+        // 根据表情状态生成 CSS 变量
+        const updateFaceCSS = React.useCallback(
+            (face) => ({
+                '--happiness': face.happiness,
+                '--derp': face.derp,
+                '--px': face.px,
+                '--py': face.py,
+            }),
+            [],
+        );
+
+        // 动画函数，逐步逼近目标表情
+        const animate = React.useCallback(() => {
+            let needsUpdate = false;
+            const newFace = { ...currentFace };
+
+            Object.keys(targetFace.current).forEach((key) => {
+                const diff = targetFace.current[key] - newFace[key];
+                if (Math.abs(diff) > 0.01) {
+                    newFace[key] += diff * config.animationSpeed;
+                    needsUpdate = true;
+                }
+            });
+
+            if (needsUpdate) {
+                setCurrentFace(newFace);
+                animationId.current = requestAnimationFrame(animate);
+            } else {
+                animationId.current = null;
+            }
+        }, [currentFace]);
+
+        // 启动动画
+        const startAnimation = React.useCallback(() => {
+            if (!animationId.current) {
+                animationId.current = requestAnimationFrame(animate);
+            }
+        }, [animate]);
+
+        // 停止动画
+        const stopAnimation = React.useCallback(() => {
+            if (animationId.current) {
+                cancelAnimationFrame(animationId.current);
+                animationId.current = null;
+            }
+        }, []);
+
+        // 鼠标移动时，根据鼠标与按钮的距离计算 happiness、px、py
+        const handleMouseMove = React.useCallback(
+            (e) => {
+                if (!btnHappyRef.current || !btnUnhappyRef.current || !containerRef.current) return;
+
+                const containerRect = containerRef.current.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+
+                const happyRect = btnHappyRef.current.getBoundingClientRect();
+                const unhappyRect = btnUnhappyRef.current.getBoundingClientRect();
+
+                // 计算鼠标到两个按钮中心的距离
+                const dx1 = x - (unhappyRect.left + unhappyRect.width / 2);
+                const dy1 = y - (unhappyRect.top + unhappyRect.height / 2);
+                const dx2 = x - (happyRect.left + happyRect.width / 2);
+                const dy2 = y - (happyRect.top + happyRect.height / 2);
+
+                const distUnhappy = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                const distHappy = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                // happiness 越靠近开心按钮越大
+                const happiness = Math.pow(distUnhappy / (distHappy + distUnhappy), 0.75);
+                // 鼠标在容器内的归一化坐标
+                const px = (x - containerRect.left) / containerRect.width;
+                const py = (y - containerRect.top) / containerRect.height;
+
+                // 设置目标表情
+                targetFace.current = {
+                    ...targetFace.current,
+                    happiness,
+                    px,
+                    py,
+                    derp: 0,
+                };
+                startAnimation();
+            },
+            [startAnimation],
+        );
+
+        // 鼠标离开时恢复默认表情
+        const handleMouseLeave = React.useCallback(() => {
+            targetFace.current = config.states.normal.face;
+            startAnimation();
+        }, [startAnimation]);
+
+        // 点击开心按钮跳转
+        const handleHappyClick = React.useCallback(() => {
+            window.location.href = '';
+        }, []);
+
+        // 点击不开心按钮跳转
+        const handleUnhappyClick = React.useCallback(() => {
+            window.location.href = '';
+        }, []);
+
+        // 组件挂载时启动动画，卸载时停止动画
+        React.useEffect(() => {
+            startAnimation();
+            return () => stopAnimation();
+        }, [startAnimation, stopAnimation]);
+
+        // 渲染
+        return (
+            <div
+                className="slider-face-container"
+                ref={containerRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+            >
+                <div className="slider-face-content">
+                    <h1 className="slider-face-title">{uiState.titleText}</h1>
+                    <h2 className="slider-face-subtitle">{uiState.subtitleText}</h2>
+
+                    {/* 脸部表情区域，动态样式 */}
+                    <figure className="slider-face" style={updateFaceCSS(currentFace)}>
+                        <div className="slider-face-blush slider-face-blush-left" />
+                        <div className="slider-face-blush slider-face-blush-right" />
+                        <div className="slider-face-eye slider-face-eye-left" />
+                        <div className="slider-face-eye slider-face-eye-right" />
+                        <div className="slider-face-mouth" />
+                    </figure>
+
+                    {/* 按钮区 */}
+                    <div className="slider-face-buttons">
+                        <Button
+                            ref={btnHappyRef}
+                            className="slider-face-button slider-face-button-happy"
+                            onClick={handleHappyClick}
+                        >
+                            {uiState.btnHappyText}
+                        </Button>
+                        <Button
+                            ref={btnUnhappyRef}
+                            className="slider-face-button slider-face-button-unhappy"
+                            onClick={handleUnhappyClick}
+                        >
+                            {uiState.btnUnhappyText}
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // 渲染到 root 节点
+    ReactDOM.render(<SliderFace />, document.getElementById('root'));
+</script>
+</body>
+</html>
