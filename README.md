@@ -45,8 +45,8 @@
 ### 克隆并运行
 
 ```bash
-git clone <您的仓库URL>
-cd <项目文件夹名称>
+git clone https://github.com/miemingdouwu/miemingdouwu.github.io.git
+cd cd miemingdouwu.github.io
 npm install
 npm run dev
 ```
